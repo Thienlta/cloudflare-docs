@@ -27,13 +27,22 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
       - run: npx wrangler pages deploy --project-name cloudflare-docs dist
-        name: Deploy to Cloudflare Pages
+      - name: 📚 Wrangler publish
+        # github.com/cloudflare/wrangler-action
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          # input overrides env-defaults, regardless
+          environment: ${{ env.WORKERS_ENV }}
+          wranglerVersion: ${{ env.WRANGLER_VER }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      - run: npm run build:worker && npx wrangler deploy -c ./wrangler-workers.toml
-        if: github.ref == 'refs/heads/production'
-        name: Deploy to Cloudflare Workers [production]
+          # setting CLOUDFLARE_ACCOUNT_ID no longer works
+          GIT_COMMIT_ID: ${{ env.COMMIT_SHA }}
+
+      - name: 🎤 Notice
+        run: |
+          echo "::notice::Deployed to ${WORKERS_ENV} / ${GIT_REF} @ ${COMMIT_SHA}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - run: npm run build:worker && npx wrangler versions upload -c ./wrangler-workers.toml
