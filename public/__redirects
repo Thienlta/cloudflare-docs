@@ -149,9 +149,9 @@
 /ai/ /use-cases/ai/ 301
 
 # ai-audit
-/ai-audit/features/detect-ai-crawlers/ /ai-audit/features/analyze-ai-crawlers/ 301
-/ai-audit/features/enforce-robots-txt/ /ai-audit/features/analyze-ai-crawlers/ 301
-/ai-audit/features/analyze-ai-crawlers/ /ai-audit/features/analyze-ai-traffic/ 301
+/ai-audit/features/detect-ai-crawlers/ /ai-crawl-control/features/analyze-ai-crawlers/ 301
+/ai-audit/features/enforce-robots-txt/ /ai-crawl-control/features/analyze-ai-crawlers/ 301
+/ai-audit/features/analyze-ai-crawlers/ /ai-crawl-control/features/analyze-ai-traffic/ 301
 
 # AI Gateway
 /ai-gateway/get-started/configuring-settings/ /ai-gateway/get-started/ 301
@@ -171,6 +171,8 @@
 /ai-gateway/configuration/caching/ /ai-gateway/features/caching/ 301
 /ai-gateway/configuration/rate-limiting/ /ai-gateway/features/rate-limiting/ 301
 /ai-gateway/configuration/custom-metadata/ /ai-gateway/observability/custom-metadata/ 301
+/ai-gateway/universal/ /ai-gateway/usage/universal/ 301
+/ai-gateway/chat-completion/ /ai-gateway/usage/chat-completion/ 301
 
 # agents
 /agents/capabilities/mcp-server/ /agents/model-context-protocol/ 301
@@ -263,6 +265,10 @@
 /bots/get-started/pro/ /bots/get-started/super-bot-fight-mode/ 301
 /bots/additional-configurations/javascript-detections/ /cloudflare-challenges/challenge-types/javascript-detections/ 301
 /bots/troubleshooting/frequently-asked-questions/ /bots/frequently-asked-questions/ 301
+/bots/concepts/bot/verified-bots/categories/ /bots/concepts/bot/verified-bots/#categories 301
+/bots/concepts/bot/verified-bots/ip-validation/ /bots/reference/bot-verification/ip-validation/ 301
+/bots/concepts/bot/verified-bots/web-bot-auth/ /bots/reference/bot-verification/web-bot-auth/ 301
+/bots/concepts/bot/verified-bots/overview/  /bots/concepts/bot/verified-bots/ 301
 
 #browser-rendering
 /browser-rendering/get-started/browser-rendering-with-DO/ /browser-rendering/workers-bindings/browser-rendering-with-do/ 301
@@ -2269,6 +2275,9 @@
 /fundamentals/setup/manage-members/* /fundamentals/manage-members/:splat 301
 /logs/get-started/enable-destinations/* /logs/logpush/logpush-job/enable-destinations/:splat 301
 /logs/reference/log-fields/* /logs/logpush/logpush-job/datasets/:splat 301
+
+# AI Crawl Control
+/ai-audit/* /ai-crawl-control/:splat 301
 
 # Cloudflare One / Zero Trust
 /cloudflare-one/connections/connect-networks/install-and-setup/tunnel-guide/local/as-a-service/* /cloudflare-one/connections/connect-networks/configure-tunnels/local-management/as-a-service/:splat 301
