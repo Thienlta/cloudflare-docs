@@ -36,7 +36,7 @@
 		"@astrojs/starlight-docsearch": "0.6.0",
 		"@astrojs/starlight-tailwind": "4.0.1",
 		"@cloudflare/vitest-pool-workers": "0.9.6",
-		"@cloudflare/workers-types": "4.20250913.0",
+		"@cloudflare/workers-types": "4.20250926.0",
 		"@codingheads/sticky-header": "1.0.2",
 		"@expressive-code/plugin-collapsible-sections": "0.41.3",
 		"@expressive-code/plugin-line-numbers": "0.41.3",
@@ -86,7 +86,7 @@
 		"mdast-util-from-markdown": "2.0.2",
 		"mdast-util-mdx": "3.0.0",
 		"mdast-util-mdx-expression": "2.0.1",
-		"mermaid": "11.11.0",
+		"mermaid": "11.12.0",
 		"micromark-extension-mdxjs": "3.0.0",
 		"nanostores": "1.0.1",
 		"node-html-parser": "7.0.1",
@@ -134,7 +134,7 @@
 		"unist-util-visit": "5.0.0",
 		"vite-tsconfig-paths": "5.1.4",
 		"vitest": "2.1.6",
-		"wrangler": "4.37.0"
+		"wrangler": "4.40.2"
 	},
 	"engines": {
 		"node": ">=22"
