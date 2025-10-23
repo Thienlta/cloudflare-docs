@@ -49,7 +49,7 @@ Gateway presents an **HTTP Response Code: 526** error page in the following case
 - **The connection from Gateway to the origin is insecure.** Gateway does not trust origins which:
 
   - Only offer insecure cipher suites (such as RC4, RC4-MD5, or 3DES). You can use the [SSL Server Test tool](https://www.ssllabs.com/ssltest/index.html) to check which ciphers are supported by the origin.
-  - Do not support [FIPS-compliant ciphers](/cloudflare-one/policies/gateway/http-policies/tls-decryption/#cipher-suites) (if you have enabled [FIPS compliance mode](/cloudflare-one/policies/gateway/http-policies/tls-decryption/#fips-compliance)). In order to load the page, you can either disable FIPS mode or create a Do Not Inspect policy for this host (which has the effect of disabling FIPS compliance for this origin).
+  - Do not support [FIPS-compliant ciphers](/cloudflare-one/traffic-policies/http-policies/tls-decryption/#cipher-suites) (if you have enabled [FIPS compliance mode](/cloudflare-one/traffic-policies/http-policies/tls-decryption/#fips-compliance)). In order to load the page, you can either disable FIPS mode or create a Do Not Inspect policy for this host (which has the effect of disabling FIPS compliance for this origin).
   - Redirect all HTTPS requests to HTTP.
 
 If none of the above scenarios apply, contact Cloudflare support with the following information:
@@ -74,7 +74,7 @@ You may not see analytics on the Overview page for the following reasons:
 
 ## I see a "No Browsers Available" alert.
 
-If you encounter this error, [file feedback](/cloudflare-one/policies/browser-isolation/known-limitations/) via the WARP client and we will investigate.
+If you encounter this error, [file feedback](/cloudflare-one/remote-browser-isolation/known-limitations/) via the WARP client and we will investigate.
 
 ## I see a "Maximum Sessions Reached" alert.
 
@@ -206,7 +206,7 @@ For WARP client versions before and after 2024.12.554.0, certificate propagation
 1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **WARP Client**.
 2. Turn on **Install CA to system certificate store**.
 
-If **Install CA to system certificate store** is turned off, you must [manually install the certificate](/cloudflare-one/team-and-resources/devices/user-side-certificates/manual-deployment/), use an [MDM solution](/cloudflare-one/team-and-resources/devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software) to distribute the Cloudflare certificate to your fleet of devices, or not use the Cloudflare certificate because you do not want to have TLS decryption enabled. [TLS decryption](/cloudflare-one/policies/gateway/http-policies/tls-decryption/) must be enabled to enforce Gateway HTTP policies for HTTPS traffic.
+If **Install CA to system certificate store** is turned off, you must [manually install the certificate](/cloudflare-one/team-and-resources/devices/user-side-certificates/manual-deployment/), use an [MDM solution](/cloudflare-one/team-and-resources/devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software) to distribute the Cloudflare certificate to your fleet of devices, or not use the Cloudflare certificate because you do not want to have TLS decryption enabled. [TLS decryption](/cloudflare-one/traffic-policies/http-policies/tls-decryption/) must be enabled to enforce Gateway HTTP policies for HTTPS traffic.
 
 After enabling certificate propagation, you must update your certificate:
 
@@ -260,7 +260,7 @@ If the new certificate is not activating on the end-user device or you are getti
 
 3. Turn off TLS Decryption.
 
-If no measure is working quickly and you are encountering browser warnings that are blocking work, [turning off TLS decryption](/cloudflare-one/policies/gateway/http-policies/tls-decryption/#turn-on-tls-decryption) will prevent HTTP policies from being enforced and will ensure websites resolve until the certificate can be deployed to more user devices.
+If no measure is working quickly and you are encountering browser warnings that are blocking work, [turning off TLS decryption](/cloudflare-one/traffic-policies/http-policies/tls-decryption/#turn-on-tls-decryption) will prevent HTTP policies from being enforced and will ensure websites resolve until the certificate can be deployed to more user devices.
 
 Turning off TLS decryption should be a temporary measure. TLS decryption should be turned on if you need to enforce HTTP policies and log traffic for HTTPS traffic.
 
@@ -300,9 +300,9 @@ To prevent WARP from auto connecting while using an admin override code, disable
 
 ## I am getting the error `Failed to fetch user/group information from the identity provider`.
 
-This error is returned when proper API permissions are not set up in the identity provider. When Cloudflare attempts to fetch user/group information from the identity provider and proper API permissions have not been configured, the `Failed to fetch user/group information from the identity provider` error will appear. Review the [SSO integration](/cloudflare-one/identity/idp-integration/) guide for your identity provider to ensure your application has the appropriate API permissions.
+This error is returned when proper API permissions are not set up in the identity provider. When Cloudflare attempts to fetch user/group information from the identity provider and proper API permissions have not been configured, the `Failed to fetch user/group information from the identity provider` error will appear. Review the [SSO integration](/cloudflare-one/integrations/identity-providers/) guide for your identity provider to ensure your application has the appropriate API permissions.
 
-For example, [Microsoft Entra](/cloudflare-one/identity/idp-integration/entra-id/#2-configure-api-permissions-in-entra-id) and [Okta](</cloudflare-one/identity/idp-integration/okta/#:~:text=(Optional)%20Create%20an%20Okta%20API%20token%20and%20enter%20it%20in%20Zero%20Trust%20(the%20token%20can%20be%20read%2Donly).%20This%20will%20prevent%20your%20Okta%20groups%20from%20failing%20if%20you%20have%20more%20than%20100%20groups>) have required permissions stated in their integration guides.
+For example, [Microsoft Entra](/cloudflare-one/integrations/identity-providers/entra-id/#2-configure-api-permissions-in-entra-id) and [Okta](</cloudflare-one/integrations/identity-providers/okta/#:~:text=(Optional)%20Create%20an%20Okta%20API%20token%20and%20enter%20it%20in%20Zero%20Trust%20(the%20token%20can%20be%20read%2Donly).%20This%20will%20prevent%20your%20Okta%20groups%20from%20failing%20if%20you%20have%20more%20than%20100%20groups>) have required permissions stated in their integration guides.
 
 You can also examine logs in your identity provider to identify any denied requests related to API access.
 
