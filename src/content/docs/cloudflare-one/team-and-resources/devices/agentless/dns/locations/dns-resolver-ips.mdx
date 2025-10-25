@@ -9,8 +9,8 @@ When you create a DNS location, Gateway assigns IPv4/IPv6 addresses and DoT/DoH 
 
 To view the resolver endpoint IP addresses and hostnames for a DNS location:
 
-1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Gateway** > **DNS locations**.
-2. Locate the DNS location, then select **Configure**.
+1. In [Cloudflare One](https://one.dash.cloudflare.com/), go to **Networks** > **Resolvers & Proxies**.
+2. Select the DNS location, then select **Edit**.
 3. Go to **Setup instructions**. The addresses and hostnames will appear in **Your configuration**.
 
 ## DNS query location matching
@@ -83,7 +83,7 @@ For example, for the DoH hostname `https://65y9p2vm1u.cloudflare-gateway.com/dns
 
 By default, all queries from a configured DNS location will be sent to its DNS resolver IP address to be inspected by Gateway. You can configure Gateway to only filter queries originating from specific networks within a location:
 
-1. [Create an IP list](/cloudflare-one/traffic-policies/lists/) with the IPv4 and/or IPv6 addresses that your organization will source queries from.
+1. [Create an IP list](/cloudflare-one/reusable-components/lists/) with the IPv4 and/or IPv6 addresses that your organization will source queries from.
 2. Add a [Source IP](/cloudflare-one/traffic-policies/dns-policies/#source-ip) condition to your DNS policies.
 
 For example, to block security threats for specific networks, you could create the following policy:

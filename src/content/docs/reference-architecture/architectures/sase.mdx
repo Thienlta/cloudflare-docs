@@ -217,7 +217,7 @@ When Cloudflare acts as the SSO service to an application, user authentication i
 
 ![The flow of SSO requests is proxied through Cloudflare, where the IdP is still used to authenticate, but Cloudflare provides additional access controls.](~/assets/images/reference-architecture/cloudflare-one-reference-architecture-images/cf1-ref-arch-8.svg)
 
-The last method of connecting SaaS applications to Cloudflare's SASE architecture is with an API-based [cloud access security broker](https://www.cloudflare.com/learning/access-management/what-is-a-casb/) (CASB). The Cloudflare CASB integrates via API to [popular SaaS suites](/cloudflare-one/applications/casb/casb-integrations/) — including Google Workspace, Microsoft 365, Salesforce, and more — and continuously scans these applications for misconfigurations, unauthorized user activity, and other security risks.
+The last method of connecting SaaS applications to Cloudflare's SASE architecture is with an API-based [cloud access security broker](https://www.cloudflare.com/learning/access-management/what-is-a-casb/) (CASB). The Cloudflare CASB integrates via API to [popular SaaS suites](/cloudflare-one/integrations/cloud-and-saas/) — including Google Workspace, Microsoft 365, Salesforce, and more — and continuously scans these applications for misconfigurations, unauthorized user activity, and other security risks.
 
 Native integration with the Cloudflare [data loss prevention](https://www.cloudflare.com/learning/access-management/what-is-dlp/) (DLP) service enables CASB to scan for sensitive or regulated data that may be stored in files with incorrect permissions — further risking leaks or unauthorized access. CASB reports findings that alert IT teams to items such as:
 
@@ -482,7 +482,7 @@ Once a user is authenticated, Cloudflare receives that user's information, such 
 
 In addition to user identities, most corporate directories also contain groups to which those identities are members. Cloudflare supports the importing of group information, which is then used as part of the policy. Group membership is a critical part of aggregating single identities so that policies can be less complex. It is far easier — for example — to set a policy allowing all employees in the sales department to access Salesforce, than to identify each user in the sales organization.
 
-Cloudflare also supports authentication of devices that are not typically associated with a human user – such as an IoT device monitoring weather conditions at a factory. For those secure connections, organizations can generate [service tokens](/cloudflare-one/identity/service-tokens/) or create [Mutual TLS](https://www.cloudflare.com/learning/access-management/what-is-mutual-tls/) (mTLS) certificates that can be deployed to such devices or machine applications.
+Cloudflare also supports authentication of devices that are not typically associated with a human user – such as an IoT device monitoring weather conditions at a factory. For those secure connections, organizations can generate [service tokens](/cloudflare-one/access-controls/service-credentials/service-tokens/) or create [Mutual TLS](https://www.cloudflare.com/learning/access-management/what-is-mutual-tls/) (mTLS) certificates that can be deployed to such devices or machine applications.
 
 #### Trusting devices
 
@@ -550,7 +550,7 @@ Connecting an IdP to Cloudflare provides the ability to make access decisions ba
 
 Cloudflare's vast intelligent network continually monitors billions of web assets and [categorizes them](/cloudflare-one/traffic-policies/domain-categories/) based on our threat intelligence and general knowledge of Internet content. You can use our free [Cloudflare Radar](https://radar.cloudflare.com/) service to examine what categories might be applied to any specific domain. Policies can then include these categories to block known and potential security risks on the public Internet, as well as specific categories of content.
 
-Additionally, Cloudflare's SWG offers the flexibility to create and maintain customized [lists of data](/cloudflare-one/traffic-policies/lists/). These lists can be uploaded via CSV files, manually maintained, or integrated with other processes and applications using the Cloudflare API. A list can contain the following data:
+Additionally, Cloudflare's SWG offers the flexibility to create and maintain customized [lists of data](/cloudflare-one/reusable-components/lists/). These lists can be uploaded via CSV files, manually maintained, or integrated with other processes and applications using the Cloudflare API. A list can contain the following data:
 
 - URLs
 - Hostnames
@@ -682,7 +682,7 @@ It's worth noting that many of the capabilities described in this document can b
 | Secure Web Gateway        | [How to build Gateway policies](/cloudflare-one/traffic-policies/)                                                                                                                |
 | Zero Trust Network Access | [How to build Access policies](/cloudflare-one/access-controls/policies/)                                                                                                         |
 | Remote Browser Isolation  | [Understanding browser isolation](/cloudflare-one/remote-browser-isolation/)                                                                                                      |
-| API-Driven CASB           | [Scanning SaaS applications](/cloudflare-one/applications/casb/)                                                                                                                  |
+| API-Driven CASB           | [Scanning SaaS applications](/cloudflare-one/integrations/cloud-and-saas/)                                                                                                        |
 | Email Security            | [Understanding Cloudflare Email Security](/email-security/)                                                                                                                       |
 | Replacing your VPN        | [Using Cloudflare to replace your VPN](/learning-paths/replace-vpn/concepts/)                                                                                                     |
 
