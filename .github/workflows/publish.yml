@@ -2,7 +2,7 @@ on: [push, workflow_dispatch]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ !contains(github.ref, 'production') }}
+  cancel-in-progress: ${{ !contains(github.ref, 'production')}}
 
 jobs:
   publish:
@@ -21,7 +21,7 @@ jobs:
 
       - run: npm ci
 
-      # ✅ Restore Astro static cache
+      # ✅ Restore Astro cache
       - uses: actions/cache/restore@v4
         with:
           path: |
@@ -29,21 +29,32 @@ jobs:
             node_modules/.astro/assets
           key: static
 
-      # ✅ Build Astro before uploading anything
+      # ✅ Build Astro
       - name: Build Astro
         run: npx astro build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-      # ✅ Install rclone for upload
+      # ✅ Install rclone
       - name: Install rclone
         run: |
           curl https://rclone.org/install.sh | sudo bash
 
-      # ✅ Upload markdown and LLMs only if folders exist
+      # ✅ Optional: Debug dist folder content (an toàn để xoá nếu không cần)
+      - name: Show dist folders
+        run: |
+          echo "📁 dist directory contents:"
+          ls -R dist || true
+          echo "📁 distmd directory contents:"
+          ls -R distmd || true
+          echo "📁 distllms directory contents:"
+          ls -R distllms || true
+
+      # ✅ Upload markdown + LLMs if present
       - name: Upload markdown and LLMs
         run: |
           if [ -d "distmd" ]; then
+            echo "🗂 Uploading markdown..."
             cd distmd
             zip -r markdown.zip .
             rclone copy \
@@ -57,6 +68,7 @@ jobs:
           fi
 
           if [ -d "distllms" ]; then
+            echo "🧠 Uploading LLM files..."
             cd distllms
             find . -type f | while read file; do
               rclone copy \
@@ -76,22 +88,21 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # ✅ Save Astro cache for next runs
-      - uses: actions/cache/save@v4
-        with:
-          path: |
-            node_modules/.astro/_astro
-            node_modules/.astro/assets
-          key: static
+      # ✅ Deploy to Cloudflare Workers (production)
+      - name: Deploy to Cloudflare Workers [production]
+        if: github.ref == 'refs/heads/production'
+        run: npm run build:worker && npx wrangler deploy -c ./wrangler-workers.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # ✅ Deploy preview Workers build
+      # ✅ Deploy to Cloudflare Workers (preview)
       - name: Deploy to Cloudflare Workers [preview]
         if: github.ref != 'refs/heads/production'
         run: npm run build:worker && npx wrangler versions upload -c ./wrangler-workers.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # ✅ Always save cache at the end
+      # ✅ Save Astro cache for next runs
       - uses: actions/cache/save@v4
         if: always()
         with:
