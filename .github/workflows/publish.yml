@@ -23,6 +23,21 @@ jobs:
             node_modules/.astro/_astro
             node_modules/.astro/assets
           key: static
+        run: |
+          cd distmd && zip -r markdown.zip .
+          rclone copy \
+            --config ../bin/rclone.conf \
+            ./markdown.zip \
+            devdocs:vendored-markdown
+          rm markdown.zip
+          cd ..
+          cd distllms
+          for file in $(find . -type f); do
+            rclone copy \
+              --config ../bin/rclone.conf \
+              $file \
+              devdocs:vendored-markdown
+          done
       - run: npx astro build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
@@ -48,16 +63,5 @@ jobs:
         with:
           path: |
             node_modules/.astro/_astro
-            node_modules/.astro/assets
-          key: static
-        run: |
-          rclone sync \
-            --config bin/rclone.conf \
-            distmd \
-            autorag:developer-docs-full
-      - uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: |
             node_modules/.astro/assets
           key: static
