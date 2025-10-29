@@ -10,61 +10,39 @@ jobs:
     permissions:
       contents: read
     name: Publish to Cloudflare Pages
-
     steps:
-      # 1️⃣ Checkout code
       - uses: actions/checkout@v4
-
-      # 2️⃣ Setup Node
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
           cache: npm
-
-      # 3️⃣ Install dependencies
       - run: npm ci
-
-      # 4️⃣ Restore Astro build cache
       - uses: actions/cache/restore@v4
         with:
           path: |
             node_modules/.astro/_astro
             node_modules/.astro/assets
           key: static
-
-      # 5️⃣ Build (Astro site)
-      - name: Build Astro site
-        run: npx astro build
+      - run: npx astro build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-
-      # 6️⃣ Optional: If you have an additional build step (e.g., Markdown/LLM)
-      - name: Build additional assets
-        run: npm run build
-        continue-on-error: true  # Không fail toàn job nếu không có script này
-
-      # 7️⃣ Deploy to Cloudflare Pages
-      - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy --project-name cloudflare-docs dist
+      - run: npx wrangler pages deploy --project-name cloudflare-docs dist
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      # 8️⃣ Deploy to Cloudflare Workers (preview)
-      - name: Deploy to Cloudflare Workers [preview]
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules/.astro/_astro
+            node_modules/.astro/assets
+          key: static
+      - run: npm run build
+        name: Build
+      - run: npm run build:worker && npx wrangler versions upload -c ./wrangler-workers.toml
         if: github.ref != 'refs/heads/production'
-        run: npm run build:worker && npx wrangler versions upload -c ./wrangler-workers.toml
+        name: Deploy to Cloudflare Workers 
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      # 9️⃣ Deploy to Cloudflare Workers (production)
-      - name: Deploy to Cloudflare Workers [production]
-        if: github.ref == 'refs/heads/production'
-        run: npm run build:worker && npx wrangler deploy -c ./wrangler-workers.toml
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      # 🔟 Save Astro build cache at the end
       - uses: actions/cache/save@v4
         if: always()
         with:
