@@ -418,6 +418,7 @@
 /network-interconnect/express-cni/create-interconnects/ /network-interconnect/ 301
 /network-interconnect/express-cni/ /network-interconnect/ 301
 /network-interconnect/pni-and-peering/ /network-interconnect/ 301
+/network-interconnect/static/cni-locations-04-08-2025.pdf /network-interconnect/static/cni-locations-30-10-2025.pdf 301
 
 # Constellation
 /constellation/ /workers-ai/ 301
@@ -520,13 +521,14 @@
 /ddos-protection/managed-rulesets/adjust-rules/ /ddos-protection/managed-rulesets/http/http-overrides/override-examples/ 301
 
 # developer spotlight
-/developer-spotlight/tutorials/ /developer-spotlight/ 301
-/developer-spotlight/tutorials/create-sitemap-from-sanity-cms/ /developer-spotlight/ 301
-/developer-spotlight/tutorials/creating-a-recommendation-api/ /developer-spotlight/ 301
-/developer-spotlight/tutorials/custom-access-control-for-files/ /developer-spotlight/ 301
-/developer-spotlight/tutorials/fullstack-authentication-with-next-js-and-cloudflare-d1/ /developer-spotlight/ 301
-/developer-spotlight/tutorials/handle-form-submission-with-astro-resend/ /developer-spotlight/ 301
-/developer-spotlight/application-guide/ /developer-spotlight/ 301
+/developer-spotlight/tutorials/ /resources/ 301
+/developer-spotlight/tutorials/create-sitemap-from-sanity-cms/ /resources/ 301
+/developer-spotlight/tutorials/creating-a-recommendation-api/ /resources/ 301
+/developer-spotlight/tutorials/custom-access-control-for-files/ /resources/ 301
+/developer-spotlight/tutorials/fullstack-authentication-with-next-js-and-cloudflare-d1/ /resources/ 301
+/developer-spotlight/tutorials/handle-form-submission-with-astro-resend/ /resources/ 301
+/developer-spotlight/application-guide/ /resources/ 301
+/developer-spotlight/ /resources/ 301
 
 # dns
 /dns/additional-options/cname-flattening/ /dns/cname-flattening/ 301
@@ -667,7 +669,7 @@
 /fundamentals/global-configurations/ /fundamentals/ 301
 /fundamentals/customizations/ /fundamentals/ 301
 /fundamentals/security/cybersafe/ /fundamentals/reference/policies-compliances/cybersafe/ 301
-/fundamentals/security/challenge-passage/ /cloudflare-challenges/challenge-types/challenge-pages/#challenge-passage 301
+/fundamentals/security/challenge-passage/ /cloudflare-challenges/challenge-types/challenge-pages/challenge-passage/ 301
 /fundamentals/glossary/ /fundamentals/reference/glossary/ 301
 /fundamentals/account-and-billing/login/ /fundamentals/user-profiles/login/ 301
 /fundamentals/account-and-billing/account-maintenance/delete-account/ /fundamentals/user-profiles/delete-account/ 301
@@ -782,7 +784,7 @@
 /fundamentals/concepts/the-internet/ https://www.cloudflare.com/learning/network-layer/how-does-the-internet-work/ 301
 /fundamentals/concepts/free-plan/ /billing/ 301
 /fundamentals/setup/manage-domains/connect-your-domain/ /fundamentals/manage-domains/add-site/ 301
-/fundamentals/security/cloudflare-challenges/challenge-passage/ /cloudflare-challenges/challenge-types/challenge-pages/#challenge-passage 301
+/fundamentals/security/cloudflare-challenges/challenge-passage/ /cloudflare-challenges/challenge-types/challenge-pages/challenge-passage/ 301
 /fundamentals/security/cloudflare-challenges/challenge-solve-rate/ /cloudflare-challenges/reference/challenge-solve-rate/ 301
 /fundamentals/security/cloudflare-challenges/challenge-solve-issues/ /cloudflare-challenges/troubleshooting/challenge-solve-issues/ 301
 /fundamentals/security/cloudflare-challenges/ /cloudflare-challenges/ 301
@@ -1676,7 +1678,7 @@
 /waf/analytics/security-events/paid-plans/ /waf/analytics/security-events/ 301
 /waf/analytics/security-events/additional-information/ /waf/tools/validation-checks/ 301
 /waf/reference/cloudflare-challenges/ /cloudflare-challenges/ 301
-/waf/tools/challenge-passage/ /cloudflare-challenges/challenge-types/challenge-pages/#challenge-passage 301
+/waf/tools/challenge-passage/ /cloudflare-challenges/challenge-types/challenge-pages/challenge-passage/ 301
 /waf/reference/migration-guides/ /waf/reference/legacy/ 301
 /waf/reference/migration-guides/old-rate-limiting-deprecation/ /waf/reference/legacy/old-rate-limiting/upgrade/ 301
 /waf/reference/migration-guides/waf-managed-rules-migration/ /waf/reference/legacy/old-waf-managed-rules/upgrade/ 301
@@ -1907,8 +1909,8 @@
 /workers/configuration/bindings/about-service-bindings/ /workers/runtime-apis/bindings/service-bindings/ 301
 /workers/tutorials/localize-a-website/ /pages/tutorials/localize-a-website/ 301
 /workers/tutorials/manage-projects-with-lerna/ /pages/configuration/monorepos/#monorepo-management-tools 301
-/workers/tutorials/create-sitemap-from-sanity-cms/ /developer-spotlight/ 301
-/workers/tutorials/custom-access-control-for-files-in-r2-using-d1-and-workers/ /developer-spotlight/ 301
+/workers/tutorials/create-sitemap-from-sanity-cms/ /resources/ 301
+/workers/tutorials/custom-access-control-for-files-in-r2-using-d1-and-workers/ /resources/ 301
 /workers/tutorials/generate-dynamic-og-images-using-workers/ /workers/tutorials/ 302
 /workers/static-assets/migrate-from-pages/ /workers/static-assets/migration-guides/migrate-from-pages/ 301
 /workers/static-assets/compatibility-matrix/ /workers/static-assets/migration-guides/migrate-from-pages/ 301
@@ -1941,8 +1943,8 @@
 /workers/testing/miniflare/get-started/migrating/ /workers/testing/miniflare/migrations/from-v2/ 301
 /workers/databases/native-integrations/fauna/ /workers/databases/native-integrations/ 301
 /workers/tutorials/store-data-with-fauna/ https://fauna.com/blog/the-future-of-fauna 301
-/workers/tutorials/live-cursors-with-nextjs-rpc-do/ /developer-spotlight/ 301
-/workers/tutorials/automated-analytics-reporting/ /developer-spotlight/ 301
+/workers/tutorials/live-cursors-with-nextjs-rpc-do/ /resources/ 301
+/workers/tutorials/automated-analytics-reporting/ /resources/ 301
 
 # workers ai
 /workers-ai/models/llm/ /workers-ai/models/#text-generation 301
@@ -1959,11 +1961,11 @@
 /workers-ai/configuration/function-calling/ /workers-ai/features/function-calling/ 301
 /workers-ai/platform/storage-options/ /workers/platform/storage-options/ 301
 /workers-ai/configuration/workers-ai-sdk/ /workers-ai/configuration/bindings/ 301
-/workers-ai/tutorials/creating-a-recommendation-api/ /developer-spotlight/ 301
+/workers-ai/tutorials/creating-a-recommendation-api/ /resources/ 301
 /workers/observability/baselime-integration/ /workers/observability/integrations/baselime-integration/ 301
 /workers-ai/tutorials/image-generator-flux/ /workers-ai/tutorials/image-generation-playground/ 301
-/workers-ai/guides/tutorials/build-a-voice-notes-app-with-auto-transcription/ /developer-spotlight/ 301
-/workers-ai/tutorials/build-ai-interview-practice-tool/ /developer-spotlight/ 301
+/workers-ai/guides/tutorials/build-a-voice-notes-app-with-auto-transcription/ /resources/ 301
+/workers-ai/tutorials/build-ai-interview-practice-tool/ /resources/ 301
 
 # Function calling
 /workers-ai/function-calling/ /workers-ai/features/function-calling/ 301
@@ -2298,6 +2300,7 @@
 /cloudflare-one/policies/gateway/block-page/ /cloudflare-one/reusable-components/custom-pages/gateway-block-page/ 301
 /cloudflare-one/team-and-resources/devices/warp/user-side-certificates/ /cloudflare-one/team-and-resources/devices/user-side-certificates/ 301
 /cloudflare-one/traffic-policies/lists/ /cloudflare-one/reusable-components/lists/ 301
+/cloudflare-one/traffic-policies/ids/ /cloudflare-one/traffic-policies/enable-ids/ 301
 
 # Email Security new revamp (statics)
 /cloudflare-one/email-security/auto-moves/ /cloudflare-one/email-security/settings/auto-moves/ 301
