@@ -10,7 +10,7 @@ main = "./worker/index.ts"
 # ===============================
 # ⚙️ CẤU HÌNH MÔI TRƯỜNG
 # ===============================
-compatibility_date = "2024-01-29"
+compatibility_date = "2025-09-15"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true   # true = test trên .workers.dev, false = deploy domain thật
 
