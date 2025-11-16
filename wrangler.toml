@@ -1,26 +1,49 @@
 #:schema ./node_modules/wrangler/config-schema.json
+
+# ===============================
+# 🌐 THÔNG TIN CƠ BẢN
+# ===============================
 name = "cloudflare-docs"
 account_id = "b54f07a6c269ecca2fa60f1ae4920c99"
-compatibility_date = "2024-10-14"
-compatibility_flags = ["nodejs_compat"]
 main = "./worker/index.ts"
 
-workers_dev = true
+# ===============================
+# ⚙️ CẤU HÌNH MÔI TRƯỜNG
+# ===============================
+compatibility_date = "2024-01-29"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true   # true = test trên .workers.dev, false = deploy domain thật
+
+# ===============================
+# 🌍 ROUTE – DOMAIN TRIỂN KHAI
+# ===============================
 route = { pattern = "developers.cloudflare.com/*", zone_name = "developers.cloudflare.com" }
 
+# ===============================
+# 📦 QUY TẮC XỬ LÝ FILE
+# ===============================
 rules = [
-	{ type = "Text", globs = ["**/__redirects"], fallthrough = true },
+  { type = "Text", globs = ["**/__redirects"], fallthrough = true },
 ]
 
+# ===============================
+# 🧱 ASSETS – PHỤC VỤ WEBSITE TĨNH
+# ===============================
 [assets]
-directory = "./dist"
-binding = "ASSETS"
-not_found_handling = "404-page"
-run_worker_first = true
+directory = "./dist"                  # Thư mục chứa file build sẵn (HTML, CSS, JS)
+binding = "ASSETS"                    # Biến truy cập trong code: env.ASSETS
+not_found_handling = "404-page"       # Trang 404 tùy chỉnh
+run_worker_first = true               # Worker xử lý logic trước khi trả file tĩnh
 
+# ===============================
+# ☁️ R2 BUCKET – LƯU TRỮ DỮ LIỆU
+# ===============================
 [[r2_buckets]]
-binding = "VENDORED_MARKDOWN"
-bucket_name = "vendored-markdown"
+binding = "VENDORED_MARKDOWN"         # Biến truy cập trong code: env.VENDORED_MARKDOWN
+bucket_name = "vendored-markdown"     # Tên bucket R2 thật trên Cloudflare
 
+# ===============================
+# 📊 GIÁM SÁT & LOG
+# ===============================
 [observability]
 enabled = true
