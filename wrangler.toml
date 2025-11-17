@@ -17,7 +17,7 @@ workers_dev = true   # true = test trên .workers.dev, false = deploy domain th�
 # ===============================
 # 🌍 ROUTE – DOMAIN TRIỂN KHAI
 # ===============================
-route = { pattern = "developers.cloudflare.com/*", zone_name = "developers.cloudflare.com" }
+route = { pattern = "developers.cloudflare.com/*", zone_name = "developers.cloudflare.com", zone_name = "cloudflare-docs-c5s.pages.dev" }
 
 # ===============================
 # 📦 QUY TẮC XỬ LÝ FILE
