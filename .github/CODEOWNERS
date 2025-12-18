@@ -4,17 +4,17 @@
 
 # More dev-specific files
 
-/.github/ @cloudflare/pcx-content-engineering @kodster28
-/.github/CODEOWNERS @cloudflare/pcx-technical-writing @kodster28
+/.github/ @cloudflare/pcx-content-engineering @cloudflare/content-engineering @kodster28
+/.github/CODEOWNERS @cloudflare/pcx-technical-writing @cloudflare/content-engineering @kodster28
 /.github/actions/assign-pr/index.js @cloudflare/pcx-technical-writing @kodster28
-/src/components/ @cloudflare/pcx-content-engineering @kodster28
-*.js @cloudflare/pcx-content-engineering @kodster28
-*.ts @cloudflare/pcx-content-engineering @kodster28
-*.astro @cloudflare/pcx-content-engineering @kodster28
-/src/schemas/tags.ts @cloudflare/pcx-content-engineering @kodster28
-/src/util/api.ts @cloudflare/pcx-content-engineering @pedrosousa @kodster28
-/src/content/workers-ai-models/ @craigsdennis @cloudflare/pcx-content-engineering @cloudflare/pcx-technical-writing @kodster28
-/public/__redirects @cloudflare/pcx-content-engineering @cloudflare/pcx-technical-writing
+/src/components/ @cloudflare/pcx-content-engineering @cloudflare/content-engineering @kodster28
+*.js @cloudflare/pcx-content-engineering @cloudflare/content-engineering @kodster28
+*.ts @cloudflare/pcx-content-engineering @cloudflare/content-engineering @kodster28
+*.astro @cloudflare/pcx-content-engineering @cloudflare/content-engineering @kodster28
+/src/schemas/tags.ts @cloudflare/pcx-content-engineering @cloudflare/content-engineering @kodster28
+/src/util/api.ts @cloudflare/pcx-content-engineering @cloudflare/content-engineering @pedrosousa @kodster28
+/src/content/workers-ai-models/ @craigsdennis @cloudflare/pcx-content-engineering @cloudflare/content-engineering @cloudflare/pcx-technical-writing @kodster28
+/public/__redirects @cloudflare/pcx-content-engineering @cloudflare/content-engineering @cloudflare/pcx-technical-writing
 
 
 # AI
@@ -136,7 +136,7 @@
 /src/content/compatibility-flags/ @irvinebroque @mikenomitch @GregBrimble @cloudflare/pcx-technical-writing
 /src/content/docs/workers/wrangler/ @cloudflare/wrangler @irvinebroque @cloudflare/pcx-technical-writing @cloudflare/workers-runtime-1
 /src/content/docs/pages/framework-guides/ @igorminar @cloudflare/wrangler @aninibread @GregBrimble @cloudflare/pcx-technical-writing
-/src/content/docs/analytics/analytics-engine/ @irvinebroque @elithrar @cloudflare/pcx-technical-writing
+/src/content/docs/analytics/analytics-engine/ @irvinebroque @elithrar @nevikashah @WalshyDev @cloudflare/pcx-technical-writing
 /src/content/docs/cloudflare-for-platforms/ @irvinebroque @dinasaur404 @cloudflare/pcx-technical-writing
 /src/content/docs/cloudflare-for-platforms/workers-for-platforms/ @irvinebroque @dinasaur404 @cloudflare/deploy-config @cloudflare/pcx-technical-writing
 /src/content/docs/workers/observability/ @irvinebroque @mikenomitch @nevikashah @cloudflare/pcx-technical-writing
