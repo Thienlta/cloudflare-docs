@@ -1,4 +1,4 @@
-name: Deploy Astro (Cloudflare Worker)
+name: Deploy Astro + React
 
 on:
   push:
@@ -22,16 +22,15 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      # ⚡ Cache Astro build
-      - name: Cache Astro
+      - name: Cache Astro/Vite
         uses: actions/cache@v4
         with:
           path: |
             .astro
             node_modules/.astro
-          key: astro-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Build Astro
+      - name: Build
         run: npm run build
 
       - name: Verify dist
@@ -47,4 +46,4 @@ jobs:
         run: |
           curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
             -H "Content-Type: application/json" \
-            -d "{\"text\": \"❌ Deploy Astro failed\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
+            -d "{\"text\": \"❌ Deploy failed\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
