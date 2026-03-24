@@ -1,4 +1,4 @@
-name: Deploy Docs (Future-proof)
+name: Deploy Docs (Cloudflare Pages)
 
 on:
   push:
@@ -8,35 +8,37 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # 🔥 Node version lấy từ .nvmrc
-      - uses: actions/setup-node@v4
+      # 🔥 Node từ project (future-proof)
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: 24
           cache: npm
 
-      # 🔥 Auto fix npm version theo engines
+      # 🔧 Fix npm theo engines (tránh EBADENGINE)
       - name: Sync npm version
         run: |
-          if [ -f package.json ]; then
-            NPM_VERSION=$(node -p "require('./package.json').engines?.npm || ''")
-            if [ ! -z "$NPM_VERSION" ]; then
-              echo "Using npm@$NPM_VERSION"
-              npm install -g npm@$NPM_VERSION
-            fi
+          NPM_VERSION=$(node -p "require('./package.json').engines?.npm || ''")
+          if [ ! -z "$NPM_VERSION" ]; then
+            npm install -g npm@$NPM_VERSION
           fi
 
       - name: Verify versions
         run: node -v && npm -v
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
-      # ⚡ Cache Astro
-      - uses: actions/cache@v4
+      # ⚡ Cache Astro (đúng chuẩn)
+      - name: Cache Astro
+        uses: actions/cache@v4
         with:
           path: node_modules/.astro
           key: astro-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -47,8 +49,21 @@ jobs:
       - name: Verify dist
         run: test -d dist
 
-      - name: Deploy Pages
-        run: npx wrangler@3 pages deploy dist --project-name your-project
+      # 🔍 Build search index (docs site)
+      - name: Build search
+        run: npx pagefind --site dist
+
+      # 🚀 Deploy Cloudflare Pages
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler@3 pages deploy dist --project-name my-docs-site
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # 🔔 Notify khi lỗi
+      - name: Notify Google Chat
+        if: failure() && github.ref_name == 'production'
+        run: |
+          curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\": \"❌ Deploy Docs failed\nRepo: ${{ github.repository }}\nActor: ${{ github.actor }}\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
