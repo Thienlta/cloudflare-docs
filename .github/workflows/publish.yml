@@ -1,46 +1,51 @@
-name: Publish
+on: [push, workflow_dispatch]
 
-on:
-  push:
-    branches: [production]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/production' }}
 
 jobs:
   publish:
-    name: Production
     runs-on: ubuntu-22.04
-
-    permissions:
-      contents: read
+    name: Publish to Cloudflare Pages
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Install deps
-        run: npm ci
+      - run: npm ci
 
       - name: Cache Astro
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             node_modules/.astro
             .astro
           key: astro-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            astro-${{ runner.os }}-
 
       - name: Build
         run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=8096
 
       - name: Verify dist
         run: test -d dist
 
-      - name: Deploy to Cloudflare Pages
-        run: npx wrangler@latest pages deploy dist --project-name my-docs-site
+      - name: Deploy Pages
+        run: npx wrangler@latest pages deploy dist --project-name cloudflare-docs
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Deploy Workers (preview)
+        if: github.event_name == 'pull_request'
+        run: npm run build:worker && npx wrangler versions upload -c ./wrangler-workers.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
