@@ -1,46 +1,37 @@
-name: Deploy Docs (Cloudflare Pages)
+name: Publish
 
 on:
   push:
-    branches:
-      - production
+    branches: [production]
 
 jobs:
-  deploy:
+  publish:
+    name: Production
     runs-on: ubuntu-22.04
+
     permissions:
       contents: read
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # 🔥 Node từ project (future-proof)
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: 24
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
+          cache-dependency-path: package-lock.json
 
-      # 🔧 Fix npm theo engines (tránh EBADENGINE)
-      - name: Sync npm version
-        run: |
-          NPM_VERSION=$(node -p "require('./package.json').engines?.npm || ''")
-          if [ ! -z "$NPM_VERSION" ]; then
-            npm install -g npm@$NPM_VERSION
-          fi
-
-      - name: Verify versions
-        run: node -v && npm -v
-
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      # ⚡ Cache Astro (đúng chuẩn)
       - name: Cache Astro
         uses: actions/cache@v4
         with:
-          path: node_modules/.astro
+          path: |
+            node_modules/.astro
+            .astro
           key: astro-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Build
@@ -49,21 +40,7 @@ jobs:
       - name: Verify dist
         run: test -d dist
 
-      # 🔍 Build search index (docs site)
-      - name: Build search
-        run: npx pagefind --site dist
-
-      # 🚀 Deploy Cloudflare Pages
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler@3 pages deploy dist --project-name my-docs-site
+        run: npx wrangler@latest pages deploy dist --project-name my-docs-site
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      # 🔔 Notify khi lỗi
-      - name: Notify Google Chat
-        if: failure() && github.ref_name == 'production'
-        run: |
-          curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"text\": \"❌ Deploy Docs failed\nRepo: ${{ github.repository }}\nActor: ${{ github.actor }}\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
