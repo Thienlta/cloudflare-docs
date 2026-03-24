@@ -14,25 +14,22 @@ jobs:
     name: Publish to Cloudflare Pages
 
     env:
-      # ✅ Tăng bộ nhớ Node.js lên 8GB
       NODE_OPTIONS: --max-old-space-size=8192
-      # ✅ Giảm tải song song của Vite/Astro
       VITE_CONCURRENCY: 2
-      # ✅ Giảm tối đa số worker (Astro build sẽ nhẹ hơn)
       ASTRO_DISABLE_PARALLEL_BUILD: true
 
     steps:
       - uses: actions/checkout@v4
 
+      # ✅ FIX: dùng Node 24 thay vì 22
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      # ✅ Cache build output (nếu có)
       - uses: actions/cache@v4
         with:
           path: |
@@ -44,7 +41,7 @@ jobs:
 
       - name: Build Astro site
         run: |
-          echo "Starting Astro build with increased memory..."
+          echo "Starting Astro build..."
           npx astro build
 
       - name: Deploy to Cloudflare Pages
@@ -53,7 +50,6 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # ✅ Chỉ build worker khi không phải nhánh production
       - name: Build & Deploy Cloudflare Worker
         if: github.ref != 'refs/heads/production'
         run: |
