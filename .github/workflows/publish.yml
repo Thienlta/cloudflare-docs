@@ -1,59 +1,52 @@
+name: Publish to Cloudflare Pages
+
 on: [push, workflow_dispatch]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ !contains(github.ref, 'production') }}
 
 jobs:
   publish:
-    if: github.repository == 'cloudflare/cloudflare-docs'
-    name: Production
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+    name: Publish to Cloudflare Pages
+
+    env:
+      NODE_OPTIONS: --max-old-space-size=8192
+      VITE_CONCURRENCY: 2
+      ASTRO_DISABLE_PARALLEL_BUILD: true
+
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.x
+          node-version: 20.x
           cache: npm
 
-      - name: Restore node_modules (cache hit)
-        id: node-modules-cache
-        uses: actions/cache@v5
-        with:
-          path: node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install node_modules (cache miss)
+      - name: Install dependencies
         run: npm ci
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
 
-      - name: Restore Astro assets from cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            node_modules/.astro/assets
-          key: static
+      - name: Build Astro site
+        run: |
+          echo "Starting Astro build..."
+          npx astro build
 
-      - name: Build
-        run: npm run build
+      - name: Deploy to Cloudflare Pages
+        run: |
+          npx wrangler@3 pages deploy dist \
+            --project-name cloudflare-docs \
+            --commit-dirty=true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
-        continue-on-error: true
-        with:
-          name: site-html
-          path: dist
-
-      - name: Deploy to Cloudflare Workers
-        run: npx wrangler deploy
-        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      - name: Notify Google Chat on failure
-        if: failure()
+      - name: Build & Deploy Cloudflare Worker
+        if: github.ref != 'refs/heads/production'
         run: |
-          curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"text\": \"❌ *Publish Production* workflow failed.\nActor: ${{ github.actor }}\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}"
+          npm run build:worker
+          npx wrangler@3 deploy -c ./wrangler-workers.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
