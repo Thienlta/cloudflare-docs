@@ -1,14 +1,17 @@
-name: Publish Cloudflare Docs C5S
+name: Publish Production (cloudflare-docs)
 
 on:
   push:
     branches:
-      - main
       - production
+
+concurrency:
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
-    name: Deploy
+    name: Production Deploy
     runs-on: ubuntu-22.04
 
     permissions:
@@ -20,28 +23,41 @@ jobs:
 
     steps:
       # 1. Checkout
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. Setup pnpm
-      - uses: pnpm/action-setup@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
         with:
           version: 10
 
-      # 3. Setup Node 24 (đúng với engines của bạn)
-      - uses: actions/setup-node@v4
+      # 3. Setup Node (phù hợp Astro + engines)
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 24.x
           cache: pnpm
 
-      # 4. Install deps
+      # 4. Verify environment
+      - name: Debug environment
+        run: |
+          node -v
+          pnpm -v
+
+      # 5. Install dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 5. Build Astro
+      # 6. Build Astro site
       - name: Build site
-        run: pnpm run build
+        run: |
+          echo "🚀 Building Astro..."
+          pnpm run build
 
-      # 6. Deploy Pages (QUAN TRỌNG)
+      # 7. Deploy Cloudflare Pages (QUAN TRỌNG)
       - name: Deploy to Cloudflare Pages
         run: |
           pnpm exec wrangler pages deploy dist \
@@ -51,17 +67,27 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # 7. (Optional) Deploy Worker nếu có
+      # 8. Deploy Worker (middleware / API)
       - name: Deploy Worker
-        if: success()
-        run: pnpm exec wrangler deploy -c wrangler-workers.toml
+        run: |
+          pnpm exec wrangler deploy -c wrangler-workers.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # 8. Debug nếu fail
-      - name: Debug
+      # 9. Upload artifact (debug)
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-html
+          path: dist
+          if-no-files-found: ignore
+
+      # 10. Debug nếu lỗi
+      - name: Debug on failure
         if: failure()
         run: |
+          echo "===== DEBUG INFO ====="
           node -v
           pnpm -v
           free -h
+          df -h
