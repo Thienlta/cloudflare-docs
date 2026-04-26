@@ -1,4 +1,4 @@
-name: Publish Production (cloudflare-docs)
+name: Publish Production 
 
 on:
   push:
@@ -61,7 +61,7 @@ jobs:
       - name: Deploy to Cloudflare Pages
         run: |
           pnpm exec wrangler pages deploy dist \
-            --project-name cloudflare-docs-c5s \
+            --project-name cloudflare-docs \
             --commit-dirty=true
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
