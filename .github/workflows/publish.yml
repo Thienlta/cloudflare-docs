@@ -1,18 +1,17 @@
-name: Deploy Pages (Production)
+name: Publish
 
 on:
   push:
     branches:
       - production
-      - staging   # 👉 có preview
 
 concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Build & Deploy
+  publish:
+    name: Production
     runs-on: ubuntu-22.04
 
     permissions:
@@ -20,53 +19,65 @@ jobs:
 
     env:
       NODE_OPTIONS: --max-old-space-size=4096
+      ASTRO_TELEMETRY_DISABLED: 1
       CI: true
 
     steps:
       # 1. Checkout
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # 2. Node + cache đúng chuẩn
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      # 2. ✅ FIX Node (ổn định)
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      # 3. Install (reproducible)
+      # ❌ BỎ cache node_modules (gây lỗi CI ngẫu nhiên)
+
+      # 3. Install (reproducible build)
       - name: Install dependencies
         run: npm ci
 
-      # 4. Build
+      # 4. Cache Astro assets (OK)
+      - name: Restore Astro assets
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro/assets
+          key: astro-assets-${{ hashFiles('src/assets/**') }}
+          restore-keys: |
+            astro-assets-
+
+      # 5. Build
       - name: Build
         run: npm run build
 
-      # 5. Deploy Pages (production + preview)
+      # 6. 🚀 Deploy Pages (FIX QUAN TRỌNG)
       - name: Deploy to Cloudflare Pages
         run: |
           npx wrangler@latest pages deploy dist \
             --project-name=${{ secrets.CF_PAGES_PROJECT }} \
-            --branch=${{ github.ref_name }}
+            --branch=production
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # 6. Upload artifact (debug / rollback)
+      # 7. Upload artifact (optional)
       - name: Upload artifact
-        if: always()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
-          name: build-${{ github.sha }}
+          name: site-html
           path: dist
 
-      # 7. Notify failure
-      - name: Notify failure
+      # 8. 🔔 Notify khi fail
+      - name: Notify Google Chat on failure
         if: failure()
         run: |
-          MESSAGE="❌ Deploy FAILED
-          Branch: ${{ github.ref_name }}
+          MESSAGE="❌ Publish Production failed
           Repo: ${{ github.repository }}
+          Actor: ${{ github.actor }}
           Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
