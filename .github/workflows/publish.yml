@@ -1,56 +1,43 @@
-name: Deploy
+name: Publish
 
 on:
   push:
     branches:
       - production
-      - staging
-  pull_request:
-
-concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  NODE_OPTIONS: --max-old-space-size=8192
-  ASTRO_TELEMETRY_DISABLED: 1
-  CI: true
 
 jobs:
-  deploy:
+  publish:
+    name: Production
     runs-on: ubuntu-22.04
 
     permissions:
       contents: read
-      pull-requests: write
+
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+      ASTRO_TELEMETRY_DISABLED: 1
 
     steps:
       # 1. Checkout
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # 2. Node + cache npm (auto)
+      # 2. ✅ FIX Node (ổn định nhất)
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      # 3. Install (FAST)
+      # ❌ BỎ cache node_modules (tránh conflict)
+      # giữ npm cache là đủ
+
+      # 3. Install
       - name: Install dependencies
         run: npm ci
 
-      # 4. 🔥 Cache Astro (quan trọng nhất)
-      - name: Cache Astro
-        uses: actions/cache@v4
-        with:
-          path: |
-            .astro
-            node_modules/.astro
-          key: astro-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('astro.config.*') }}
-          restore-keys: |
-            astro-${{ runner.os }}-
-
-      # 5. Cache assets
-      - name: Cache Astro assets
+      # 4. Cache Astro assets (giữ lại OK)
+      - name: Restore Astro assets
         uses: actions/cache@v4
         with:
           path: node_modules/.astro/assets
@@ -58,75 +45,37 @@ jobs:
           restore-keys: |
             astro-assets-
 
-      # 6. 🔥 Cache Wrangler
-      - name: Cache Wrangler
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.wrangler
-            .wrangler
-          key: wrangler-${{ runner.os }}-${{ hashFiles('wrangler.toml') }}
-          restore-keys: |
-            wrangler-${{ runner.os }}-
-
-      # 7. Build
+      # 5. Build
       - name: Build
         run: npm run build
 
-      # =========================
-      # 🚀 Deploy logic
-      # =========================
-      - name: Deploy
-        id: deploy
+      # 6. 🚀 Deploy Cloudflare Pages (FIX QUAN TRỌNG)
+      - name: Deploy to Cloudflare Pages
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BRANCH="pr-${{ github.event.number }}"
-          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            BRANCH="staging"
-          else
-            BRANCH="production"
-          fi
-
-          echo "Deploy branch: $BRANCH"
-
-          npx wrangler@3 pages deploy dist \
-            --project-name cloudflare-docs \
-            --branch=$BRANCH
+          npx wrangler@latest pages deploy dist \
+            --project-name=cloudflare-docs \
+            --branch=production
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # =========================
-      # 💬 Comment PR preview
-      # =========================
-      - name: Comment Preview URL
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+      # 7. Upload artifact (optional)
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
-          script: |
-            const pr = context.payload.pull_request.number;
-            const url = `https://pr-${pr}.cloudflare-docs.pages.dev`;
+          name: site-html
+          path: dist
 
-            github.rest.issues.createComment({
-              issue_number: pr,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🚀 Preview ready: ${url}`
-            });
-
-      # =========================
-      # 🔔 Notify fail
-      # =========================
+      # 8. 🔔 Notify khi fail
       - name: Notify Google Chat on failure
         if: failure()
         run: |
-          MESSAGE=$(cat <<EOF
-❌ Deploy failed
-Repo: ${{ github.repository }}
-Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-EOF
-)
+          MESSAGE="❌ Publish Production failed
+          Repo: ${{ github.repository }}
+          Actor: ${{ github.actor }}
+          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          curl -s -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
+          curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
             -H "Content-Type: application/json" \
-            --data-urlencode "payload={\"text\": \"$MESSAGE\"}"
+            -d "{\"text\":\"$MESSAGE\"}"
