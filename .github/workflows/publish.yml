@@ -5,50 +5,47 @@ on:
     branches:
       - production
 
-concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   publish:
-    name: Production
+    name: Production Deploy
     runs-on: ubuntu-22.04
 
     permissions:
       contents: read
 
-    env:
-      NODE_OPTIONS: --max-old-space-size=4096
-      ASTRO_TELEMETRY_DISABLED: 1
-      CI: true
-
     steps:
-      # 1. Checkout
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # 2. Setup Node + pnpm
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm   # ✅ đúng cho repo này
+          cache: npm
 
-      - name: Enable pnpm
-        run: corepack enable
-
-      # 3. Install (chuẩn)
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
-      # 4. Build
       - name: Build
-        run: pnpm build
+        run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 5. Deploy Pages
-      - name: Deploy to Cloudflare Pages
-        run: |
-          npx wrangler@latest pages deploy dist \
-            --project-name=${{ secrets.CF_PAGES_PROJECT }} \
-            --branch=production
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Upload artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-html
+          path: dist
+
+      - name: Notify Google Chat on failure
+        if: failure()
+        run: |
+          MESSAGE="❌ Deploy failed\nRepo: ${{ github.repository }}\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -X POST "${{ secrets.CED_TEAM_ALERTS_CHANNEL_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\":\"$MESSAGE\"}"
