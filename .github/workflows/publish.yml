@@ -1,90 +1,67 @@
-name: Deploy Workers & Pages (cloudflare-docs-c5s)
+name: Publish Cloudflare Docs C5S
 
 on:
   push:
     branches:
       - main
       - production
-  workflow_dispatch:
-
-concurrency:
-  group: cloudflare-${{ github.ref }}
-  cancel-in-progress: ${{ !contains(github.ref, 'production') }}
 
 jobs:
-  deploy:
+  publish:
+    name: Deploy
     runs-on: ubuntu-22.04
-    name: Deploy Cloudflare Docs C5S
 
     permissions:
       contents: read
 
     env:
       NODE_OPTIONS: --max-old-space-size=8192
-      VITE_CONCURRENCY: 2
-      ASTRO_DISABLE_PARALLEL_BUILD: true
-      npm_config_engine_strict: false
       ASTRO_TELEMETRY_DISABLED: 1
 
     steps:
       # 1. Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2. Setup Node (Astro yêu cầu >=22)
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # 2. Setup pnpm
+      - uses: pnpm/action-setup@v3
         with:
-          node-version: 22.x
-          cache: npm
+          version: 10
 
-      # 3. Show env
-      - name: Debug environment
-        run: |
-          node -v
-          npm -v
+      # 3. Setup Node 24 (đúng với engines của bạn)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
 
-      # 4. Install deps (fix EBADENGINE)
+      # 4. Install deps
       - name: Install dependencies
-        run: npm ci --engine-strict=false
+        run: pnpm install --frozen-lockfile
 
-      # 5. Astro sync (tránh lỗi postinstall)
-      - name: Astro sync
-        run: npx astro sync
-
-      # 6. Build Astro
+      # 5. Build Astro
       - name: Build site
-        run: |
-          echo "🚀 Building Astro..."
-          npx astro build --verbose
+        run: pnpm run build
 
-      # 7. Deploy Cloudflare Pages
-      - name: Deploy Pages
+      # 6. Deploy Pages (QUAN TRỌNG)
+      - name: Deploy to Cloudflare Pages
         run: |
-          npx wrangler@3 pages deploy dist \
+          pnpm exec wrangler pages deploy dist \
             --project-name cloudflare-docs-c5s \
             --commit-dirty=true
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # 8. Build Worker
-      - name: Build Worker
-        run: npm run build:worker
-
-      # 9. Deploy Worker
+      # 7. (Optional) Deploy Worker nếu có
       - name: Deploy Worker
-        run: |
-          npx wrangler@3 deploy -c ./wrangler-workers.toml
+        if: success()
+        run: pnpm exec wrangler deploy -c wrangler-workers.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      # 10. Debug nếu fail
-      - name: Debug on failure
+      # 8. Debug nếu fail
+      - name: Debug
         if: failure()
         run: |
-          echo "===== DEBUG ====="
           node -v
-          npm -v
+          pnpm -v
           free -h
-          df -h
