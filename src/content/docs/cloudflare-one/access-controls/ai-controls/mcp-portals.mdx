@@ -120,11 +120,12 @@ Cloudflare Access will validate the server connection and fetch a list of tools 
 
 The MCP server status indicates the synchronization status of the MCP server to Cloudflare Access.
 
-| Status  | Description                                                                                                                                                |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Error   | The server's authentication failed due to expired or incorrect credentials. To fix the issue, [reauthenticate the server](#reauthenticate-the-mcp-server). |
-| Waiting | The server's tools, prompts, and resources are being synchronized.                                                                                         |
-| Ready   | The server was successfully synchronized and all tools, prompts, and resources are available.                                                              |
+| Status        | Description                                                                                                                                                                                                            |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error         | The server's authentication failed due to expired or incorrect credentials. To fix the issue, [reauthenticate the server](#reauthenticate-the-mcp-server).                                                             |
+| Sync Required | The server's OAuth credentials can no longer be refreshed and the server needs to be reauthenticated. To fix the issue, [reauthenticate the server](#reauthenticate-the-mcp-server).                                   |
+| Waiting       | The server's tools, prompts, and resources are being synchronized.                                                                                                                                                     |
+| Ready         | The server was successfully synchronized and all tools, prompts, and resources are available.                                                                                                                          |
 
 ### Reauthenticate the MCP server
 
